@@ -25,7 +25,6 @@ class CustomLatexPrinter(LatexPrinter):
             
             unit_tex = self._print_Mul(unit)
             expr = expr / unit
-            print(unit_tex,expr,unit)
         
 
 
