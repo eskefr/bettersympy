@@ -15,7 +15,7 @@ class CustomLatexPrinter(LatexPrinter):
         unit_tex = ""
         unit_check = True
         
-        if all(isinstance(arg, Quantity) or (isinstance(arg, Pow) and isinstance(arg.base, Quantity)) for arg in expr.args):
+        if all(isinstance(arg, Quantity) or (isinstance(arg, Pow) and isinstance(arg.base, Quantity)) for arg in expr.args) or isinstance(expr.args[0],Quantity) and isinstance(expr.args[1], Number):
             unit_check = False
         elif unit_check and any(isinstance(arg, Quantity) or (isinstance(arg, Pow) and isinstance(arg.base, Quantity)) for arg in expr.args):
             unit = S.One
@@ -24,6 +24,7 @@ class CustomLatexPrinter(LatexPrinter):
                     unit *= arg
             
             unit_tex = self._print_Mul(unit)
+            print(unit_tex)
             expr = expr / unit
         
 
@@ -141,3 +142,5 @@ class CustomLatexPrinter(LatexPrinter):
         return tex
 
 LatexPrinter._print_Mul = CustomLatexPrinter._print_Mul
+from sympy.physics.units import meter
+print(CustomLatexPrinter()._print_Mul(3*1/meter**4))  # Initialize the custom printer with a sample Quantity
