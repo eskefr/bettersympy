@@ -29,15 +29,12 @@ prefixable_units = [
             units.bit,
             units.byte,
             units.liter,
-            units.mole,
-            units.henry,
-            units.kelvin,
+            units.mole
             ]
 
 # Set the abbreviations for bit and byte
 units.bit._abbrev = "b"
 units.byte._abbrev = "B"
-units.hour._abbrev = "h"
 
 # Run through all prefixable units and create prefixed versions
 for unit in prefixable_units:

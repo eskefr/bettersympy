@@ -2,14 +2,13 @@ from sympy.printing.latex import LatexPrinter, _between_two_numbers_p
 from sympy import Mul, Pow, S, Number
 from sympy.physics.units import Quantity
 from sympy.core.expr import Expr
-#from sympy.simplify import fraction
+from sympy.simplify import fraction
 from sympy.utilities import sift
 
 
 class CustomLatexPrinter(LatexPrinter):
     
     def _print_Mul(self, expr: Expr):    
-        from sympy.simplify import fraction
         separator: str = self._settings['mul_symbol_latex']
         numbersep: str = self._settings['mul_symbol_latex_numbers']
         unit_tex = ""
@@ -24,11 +23,8 @@ class CustomLatexPrinter(LatexPrinter):
                     unit *= arg
             
             unit_tex = self._print_Mul(unit)
-            print(unit_tex)
             expr = expr / unit
         
-
-
         def convert(expr) -> str:
             if not expr.is_Mul:
                 return str(self._print(expr))
@@ -142,5 +138,3 @@ class CustomLatexPrinter(LatexPrinter):
         return tex
 
 LatexPrinter._print_Mul = CustomLatexPrinter._print_Mul
-from sympy.physics.units import meter
-print(CustomLatexPrinter()._print_Mul(3*1/meter**4))  # Initialize the custom printer with a sample Quantity

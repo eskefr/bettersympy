@@ -2,9 +2,9 @@ from sympy import *
 from sympy.core.basic import Basic
 from sympy.physics.units import Quantity
 from sympy.plotting import plot
-from sympy.plotting.plot import Plot
+#from sympy.plotting.plot import Plot
 from sympy.plotting.plot import _check_arguments, _build_line_series, _set_labels, plot_factory
-import matplotlib.pyplot as plt 
+#import matplotlib.pyplot as plt 
 
 def unit_splitter(expr):
     """
