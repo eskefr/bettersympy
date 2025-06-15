@@ -155,10 +155,11 @@ def plot(*args, **kwargs):
         lines.extend(line(expr, r, label, rendering_kw, **kwargs))
     
     _set_labels(lines, global_labels, global_rendering_kw)
+    
     kwargs.setdefault('xlabel', r"$x$")
     kwargs.setdefault('ylabel', r"$f(x)$")
     kwargs["xlabel"] = str(kwargs["xlabel"]) + r" $\left[\,%s\right]$" % latex(units[0]).replace(r"\text",r"\operatorname") if units[0] else ""
     kwargs["ylabel"] = str(kwargs["ylabel"]) + r" $\left[\,{%s}\right]$" % latex(units[1]).replace(r"\text",r"\operatorname") if units[1] else ""
-    print(kwargs)
+
     gs = _create_generic_data_series(**kwargs)
     return graphics(*lines, gs, **kwargs)
