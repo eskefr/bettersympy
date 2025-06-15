@@ -1,10 +1,6 @@
 from sympy import *
 from sympy.core.basic import Basic
 from sympy.physics.units import Quantity
-from sympy.plotting import plot
-#from sympy.plotting.plot import Plot
-from sympy.plotting.plot import _check_arguments, _build_line_series, _set_labels, plot_factory
-#import matplotlib.pyplot as plt 
 
 def unit_splitter(expr):
     """
@@ -125,36 +121,44 @@ def _plot_sympify(args):
             args[i] = sympify(a)
     return args, [x_unit, y_unit]
 
-documentation_string = plot.__doc__
-def plot(*args, show=True, **kwargs):
-    __doc__ = documentation_string # temporary fix for sphinx documentation
+
+from spb.defaults import TWO_D_B
+from spb.graphics import graphics, line
+from spb.utils import _check_arguments
+from spb.plot_functions.functions_2d import _create_generic_data_series, _set_labels
+
+def plot(*args, **kwargs):
+    """
+    Plot the given expression with units.
     
+    Parameters
+    ----------
+    *args : list
+        The expression to plot and the range of x.
+    show : bool, optional
+        Whether to show the plot or not. Default is True.
+    **kwargs : dict
+        Additional keyword arguments for the plot function.
+    
+    Returns
+    -------
+    Plot object
+        The plot object containing the plotted expression.
+    """
     args, units = _plot_sympify(args)
-            
     plot_expr = _check_arguments(args, 1, 1, **kwargs)
-    params = kwargs.get("params", None)
-    free = set()
-    for p in plot_expr:
-        if not isinstance(p[1][0], str):
-            free |= {p[1][0]}
-        else:
-            free |= {Symbol(p[1][0])}
-    if params:
-        free = free.difference(params.keys())
-    x = free.pop() if free else Symbol("x")
-    kwargs.setdefault('xlabel', x)
-    kwargs.setdefault('ylabel', Function('f')(x))
-    labels = kwargs.pop("label", [])
-    rendering_kw = kwargs.pop("rendering_kw", None)
-    series = _build_line_series(*plot_expr, **kwargs)
-    _set_labels(series, labels, rendering_kw)
-
-    plots = plot_factory(*series, **kwargs)
-
-    if units[0] is not None:
-        plots.xlabel = str(plots.xlabel) + fr" $\left[{latex(units[0])}\right]$"
-        plots.ylabel = str(plots.ylabel) + fr" $\left[{latex(units[1])}\right]$"
-
-    if show:
-        plots.show()
-    return plots
+    global_labels = kwargs.pop("label", [])
+    global_rendering_kw = kwargs.pop("rendering_kw", None)
+    lines = []
+    for pe in plot_expr:
+        expr, r, label, rendering_kw = pe
+        lines.extend(line(expr, r, label, rendering_kw, **kwargs))
+    
+    _set_labels(lines, global_labels, global_rendering_kw)
+    kwargs.setdefault('xlabel', r"$x$")
+    kwargs.setdefault('ylabel', r"$f(x)$")
+    kwargs["xlabel"] = str(kwargs["xlabel"]) + r" $\left[\,%s\right]$" % latex(units[0]).replace(r"\text",r"\operatorname") if units[0] else ""
+    kwargs["ylabel"] = str(kwargs["ylabel"]) + r" $\left[\,{%s}\right]$" % latex(units[1]).replace(r"\text",r"\operatorname") if units[1] else ""
+    print(kwargs)
+    gs = _create_generic_data_series(**kwargs)
+    return graphics(*lines, gs, **kwargs)
